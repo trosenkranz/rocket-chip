@@ -423,6 +423,10 @@ class TLMonitor(gen: () => TLBundleSnoop, edge: () => TLEdge, sourceInfo: Source
   }
 
   def legalizeSourceUnique(bundle: TLBundleSnoop, edge: TLEdge)(implicit sourceInfo: SourceInfo) {
+    // alloc+free is allowed in same cycle
+    // free+alloc is forbidden
+    // ... this should be enforced when we go back to Decoupled !!!
+
     val inflight = RegInit(UInt(0, width = edge.client.endSourceId))
 
     val a_counter = RegInit(UInt(0, width = log2Up(edge.maxTransfer)))
