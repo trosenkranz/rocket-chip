@@ -97,7 +97,7 @@ class TLToAXI4(idBits: Int, combinational: Boolean = true) extends LazyModule
 
     val a_state = (a_source << sourceOff) | (a_sink    << sinkOff) |
                   (a_size   << sizeOff)   | (a_addr_lo << addrOff)
-    val a_id = if (idBits == 0) UInt(0) else a_state(idBits-1, 0)
+    val a_id = if (idBits == 0) UInt(0) else a_state
 
     val r_state = Wire(UInt(width = stateBits))
     val r_source  = if (sourceBits > 0) r_state(sourceEnd-1, sourceOff) else UInt(0)
@@ -186,7 +186,7 @@ class TLToAXI4(idBits: Int, combinational: Boolean = true) extends LazyModule
 
     val arw = out_arw.bits
     arw.wen   := a_isPut
-    arw.id    := a_id
+    arw.id    := a_id // truncated
     arw.addr  := a_address
     arw.len   := UIntToOH1(a_size, AXI4Parameters.lenBits + log2Ceil(beatBytes)) >> log2Ceil(beatBytes)
     arw.size  := Mux(a_size >= maxSize, maxSize, a_size)
