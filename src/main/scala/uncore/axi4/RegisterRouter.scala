@@ -38,11 +38,12 @@ class AXI4RegisterNode(address: AddressSet, concurrency: Int = 0, beatBytes: Int
 
     val addr  = Mux(ar.valid, ar.bits.addr, aw.bits.addr)
     val in_id = Mux(ar.valid, ar.bits.id,   aw.bits.id)
+    val mask = uncore.tilelink2.maskGen(ar.bits.addr, ar.bits.size, beatBytes)
 
     in.bits.read  := ar.valid
     in.bits.index := addr >> log2Ceil(beatBytes)
     in.bits.data  := w.bits.data
-    in.bits.mask  := w.bits.strb
+    in.bits.mask  := Mux(ar.valid, mask, w.bits.strb)
     in.bits.extra := in_id
 
     // Invoke the register map builder and make it Irrevocable
